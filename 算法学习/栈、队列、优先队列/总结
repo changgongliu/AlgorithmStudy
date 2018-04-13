@@ -1,0 +1,42 @@
+# 递归算法-二叉树中算法
+1. 前序遍历-在前序位置做事情
+  - 中序遍历-在中序位置做事情
+  - 后序遍历-在后序位置做事情
+2. 队列queue
+  - 广度优先遍历
+  - 树；层序遍历
+  - 图：无权图的最短路径
+3. 对于堆的底层实现，白板编程
+  - c++ priority_queue
+  - 定义在queue中
+  - 默认情况下，最大堆
+  - priority_queue<int, vector<int>, greater<int>> 最小堆
+  - myCmp(int a ,int b){ }
+  - priority_queue<int, vector<int>, function<bool(int, int) >> pq3(myCmp);
+4. set和map常见操作
+  - insert、find、erase、change(map)
+  - record.find(num2[i]） != record.end()
+  - 哈希表进行底层实现，在插入、删除、查找o(1)时间复杂度
+  - 二分搜索树时间复杂度都为o(logn)
+# 二叉树和递归
+1. 二叉树天然的递归结构
+  - 递归终止条件，递归过程
+  - 空是一棵二叉树
+2. 一个简单二叉树问题引发的血案
+3. 注意递归的种植条件 path sum
+4. 定义递归问题binary tree path
+5. 稍复杂的递归逻辑
+    - 437
+    - 二分搜索树插入、查找、删除方式
+    - 235
+- 二叉搜索树-若存在左右子节点，则左子树所有节点小于根节点，根节点小于右子树所有节点
+
+# 动态规划
+1. 什么是动态规划
+    - 菲波那切数列
+        - F(0)=1,F(1)=2, F(n)=F(n-1)+F(n-2)
+        - 记忆化搜索-自上向下的解决方法问题
+        -
+# 贪心算法
+1. 455题,进行排序sort(g.begin(), s.end(), greater<int>())从大到小进行排序
+    - 练习题392、
