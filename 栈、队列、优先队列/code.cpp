@@ -759,84 +759,403 @@ LCA问题
 
 
 /*******************************************************************************
-例题：
+---------------------------------动态规划---------------------------------------
+例题：70 climbing stairs
+动态规划问题-爬台阶
+转换成求n-1阶台阶
+      求n-2阶台阶
+时间复杂度:o(n)
+*******************************************************************************/
+int climbStairs(int n) {
+    int result = 0;
+    if( n <= 2)
+        result = n;
+    int step2 = 1;
+    int step1 = 2;
+
+    for(int i = 3; i <= n; i++){
+        result = step1 + step2;
+        step2 = step1;
+        step1 = result;
+    }
+    return result;
+}
+/*******************************************************************************
+例题： 120 Triangle
+注：每一步只能移动到相邻格子中
+空间复杂度:o(n)
+时间复杂度:o(n^2)
+*******************************************************************************/
+// 由于我们在公式里需要递归求解子问题，那么我们不妨反过来想一下，先求解子问题，然后再解决父问题。即，从下往上求解最小路径和。我们可以发现如下规律，当我们求解minimum[i][j]时，我们会用到minimum[i+1][j]和minimum[i+1][j+1]，但是当求解完所有minimum[i]之后minimum[i+1]就没有用处了。既然如此，我们是否可以复用同一个空间来存储minimum的值呢？答案是可以的。进一步观察发现，存储最后一行的每个数字的最小路径和需要n个空间>，因此至少我们需要n个空间，这也是题目里给出O（n）的空间复杂度的原因；之后存储倒数第二行时，我们只需要前面的n-1个空间……以此类推，第一行只需要一个空间来存储最小路径和，这也正是我们要求解的结果。
+int minimumTotal(vector<vector<int> > &triangle) //这题其实就是DP的用法
+{
+    vector<int> mini(triangle[triangle.size()-1]);
+    for ( int i = triangle.size() - 2; i>= 0 ; --i )
+        for ( int j = 0; j < triangle[i].size() ; ++ j )
+            mini[j] = triangle[i][j] + min(mini[j],mini[j+1]);
+    return mini[0];
+}
+/*******************************************************************************
+例题：64 minimum path sum
+note：每一步只能左移或者下移
+*******************************************************************************/
+class Solution {
+public:
+    int minPathSum(vector<vector<int>>& grid) {
+        int lenRow = grid.size();
+        int lenCol = grid[0].size();
+        vector< vector<int>> dp(lenRow - 1, vector<int>(lenCol, 0));
+        //dp[lenRow-1][lenCol-1] = grid[lenRow-1][lenCol-1];
+
+        for(int i = lenRow-1; i >= 0; i--) {
+            for(int j = lenCol-1; j >= 0; j--) {
+                if(i == lenRow-1) {
+                    if(j == lenCol-1)
+                        dp[i][j] = grid[i][j];
+                    else
+                        dp[i][j] = grid[i][j]+dp[i][j+1];
+                }
+                else if(j == lenCol-1) {
+                    dp[i][j] = dp[i+1][j] + grid[i][j];
+                }
+                else {
+                    dp[i][j] = min(dp[i+1][j], dp[i][j+1]) + grid[i][j];
+                }
+            }
+        }
+        return dp[0][0];
+    }
+};
+
+
+/*******************************************************************************
+例题：343
+拆分数字使得和最大
+*******************************************************************************/
+//自顶向下 配合记忆化搜索的方法
+class Solution {
+private:
+    vector<int> dp;
+    int max3(int a, int b, int c) {
+        return max(a, max(b, c));
+    }
+    int doIntegerBreak(int n) {
+        if( 1 == n ){
+            return 1;
+        }
+        if(dp[n] != -1)
+            return dp[n];
+        int res = -1;
+        for( int i = 1; i <= n-1; i ++) {
+            // i + (n-i)
+            res = max3(res, i*(n-i), i*doIntegerBreak(n-i));
+        }
+        dp[n] = res;
+        return res;
+    }
+public:
+    int integerBreak(int n) {
+        assert( n >= 2);
+        dp = vector<int>(n+1, -1);
+        return doIntegerBreak(n);
+    }
+};
+//推出以下方法
+//自底向上方式
+//时间复杂度O(n^2)
+class Solution {
+private:
+        int max3(int a, int b, int c){
+            return max(max(a, b), c);
+        }
+        vector<int> dp;
+public:
+    int integerBreak(int n) {
+        assert(n>1);
+        dp = vector<int>(n+1, -1);
+
+        for( int i = 2; i <= n; i ++){
+            for(int j = 1; j < i; j ++){
+                dp[i] = max3(dp[i], j*(i-j), j*dp[i-j]);
+            }
+        }
+
+        return dp[n];
+    }
+};
+/*******************************************************************************
+例题：279 perfect squares
+
+*******************************************************************************/
+//动态规划解法
+//记忆化搜索的方式
+class Solution {
+private:
+    vector<int> dp;
+    //对n进行分解，最少两个
+    int doNumSquares(int n){
+        if( n==1 )
+            return 1;
+        if( dp[n] != -1)
+            return dp[n];
+        int res = n;
+        for(int i = 1; i*i <= n; i++){
+            if(i * i == n){
+                dp[n] = 1;//直接平方和，返回1
+                return dp[n];
+            }
+            else {
+                res = min(res,doNumSquares(n-i*i)+1);
+            }
+        }
+        dp[n] = res;
+        return dp[n];
+    }
+public:
+    int numSquares(int n) {
+        assert(n>0);
+        dp = vector<int>( n+1, -1);
+        
+        return doNumSquares(n);
+    }
+};
+//自下而上的迭代方式
+//计算过程要1-n全部计算，考虑中间
+class Solution {
+private:
+    vector<int> dp;
+public:
+    int numSquares(int n) {
+        assert(n>0);
+        dp = vector<int>( n+1, n);
+        
+        for(int i = 1; i <= n; i++){//计算1-n
+            for(int j = 1; j*j <= i; j++){
+                if ( j*j == i){
+                    dp[i] = 1;
+                    break;
+                }
+                else {
+                    dp[i] = min(dp[i], dp[i-j*j] + 1);
+                }
+            }
+        }
+        return dp[n];
+    }
+};
+//图结构也可解
+
+/*******************************************************************************
+例题：91 Decode ways
+未解决？？？？？？？？？？？？？
+*******************************************************************************/
+//递归结构？重叠子问题？动态规划
+class Solution {
+private:
+    map<string, int> dp;
+    int doNumDecodings(string& s){
+        int tmp = stoi(s);
+        if(tmp>=1 && tmp<=9)
+            return 1;
+        if(dp[s] != 0)
+            return dp[s];
+        //对s进行分拆最少拆两份
+        int res = 0;
+        for(int i = 1; i<s.size(); i++){
+            res = dp[s.substr(0,i)]+dp[s.substr(i)];
+        }
+        if(tmp>=1 && tmp<=24)
+            res += 1;
+        dp[s] = res;
+        return res;
+    }
+public:
+    int numDecodings(string s) {
+        int len = s.size(); 
+        assert(len>0);
+        //dp = map<string><int>(len+1, "");
+
+        return doNumDecodings(s);
+    } 
+};
+/*******************************************************************************
+例题：62 Unique Paths
+
+*******************************************************************************/
+//从顶向下，记忆化搜索
+class Solution {
+private:
+    vector<vector<int>> dp;
+    int doUniquePaths(int m, int n){
+        if( m == 1 || n == 1)
+            return 1;
+        if(dp[m][n] != 0)
+            return dp[m][n];
+        dp[m][n] = doUniquePaths(m-1, n) + doUniquePaths(m, n-1);
+        return dp[m][n];
+    }
+public:
+    int uniquePaths(int m, int n) {
+        assert( m >0 && n > 0);
+        dp = vector<vector<int>>(m+1, vector<int>(n+1, 0));
+        return doUniquePaths(m ,n);
+    }
+};
+
+//自下向上进行搜索
+//行列分别多出1，所有行、列为1的方法只有一进行复制即可。
+class Solution {
+private:
+    vector<vector<int>> dp;
+public:
+	int uniquePaths(int m, int n) {
+		assert( m>0 && n>0);
+		dp = vector< vector<int>>(m+1, vector<int>(n+1, 0));
+		for(int i = 1; i <= m; i++){
+			for(int j = 1; j <= n; j++){
+				if( i == 1 || j == 1){
+					dp[i][j] = 1;
+					continue;
+				}else{
+					dp[i][j] = dp[i-1][j]+dp[i][j-1];
+				}
+			}
+		}
+		return dp[m][n];
+	} 
+};
+/*******************************************************************************
+例题：63 Unique Paths II
+加入障碍物
+*******************************************************************************/
+//加入限制
+//不需要加入多余数组，对所有情况进行判断
+class Solution {
+private:
+    vector<vector<int>> dp;    
+public:
+    int uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {
+		int m = obstacleGrid.size();
+        assert(m>0);
+        int n = obstacleGrid[0].size();
+        assert(n>0);
+		dp = vector< vector<int>>(m, vector<int>(n, 0));
+		for(int i = 0; i < m; i++){
+			for(int j = 0; j < n; j++){
+                if(obstacleGrid[i][j] == 1){
+                    dp[i][j] = 0;
+                }else if( i == 0 & j > 0){
+					dp[i][j] = dp[i][j-1];
+				}else if( j == 0 & i > 0){
+					dp[i][j] = dp[i-1][j];
+				}else if(i == 0 & j== 0){
+                    dp[i][j] = 1;
+                }else {
+                    dp[i][j] = dp[i-1][j]+dp[i][j-1];
+                }
+			}
+		}
+		return dp[m][n];        
+    }\\};
+
+/*******************************************************************************
+例题：198 rob
+
+*******************************************************************************/
+//时间复杂度：o(n^2)
+class Solution {
+private:
+    vector<int> dp;
+    int doRob(vector<int>& nums, int index){
+        int len = nums.size();
+        if(index>len)
+            return 0;
+        if(dp[index] != -1)
+            return dp[index];
+        //[0...n)
+        int res = 0;
+        for( int i = index; i < len; i++){
+            res = res + nums[i] + doRob(nums, i+2);
+        }
+        dp[index] = res;
+        return res;
+    }
+public:
+    int rob(vector<int>& nums) {
+        int len = nums.size();
+        assert(len>0);
+        dp = vector<int>(len, -1);
+        return doRob(nums, 0); 
+    }
+};
+//自底向上的方式实现
+class Solution {
+private:
+    vector<int> dp;
+public:
+    int rob(vector<int>& nums) {
+        int n = nums.size();
+        if (n ==0)//对0进行判断，最后返回数组就有可能数组越界问题。
+            return 0;
+        dp = vector<int>(n, 0);
+        //dp[n-1] = nums[n-1];
+        for( int i = n-1; i >= 0; i --) {
+            for( int j = i; j < n; j ++){
+                dp[i] = max(dp[i], nums[j] + (j+2 < n ? dp[j+2]: 0));
+            }
+        }
+        return dp[0];
+    }
+};
+
+/*******************************************************************************
+例题：213 house robber II
+
+*******************************************************************************/
+//case1：去掉最后一家
+//case2：去掉第一家
+//特殊考虑：数组长度为1的情况
+class Solution {
+private:
+    vector<int> dp;
+    //[lhs,rhs]
+    int doRob(vector<int>& nums, int lhs, int rhs){
+        if(rhs<lhs)
+            return 0;
+        if(dp[lhs] != -1)
+            return dp[lhs];
+        int res = 0;
+        for(int i = lhs; i <= rhs; i ++){
+            res = max(res, nums[i] + doRob(nums, i+2, rhs));
+        }
+        dp[lhs] = res;
+        return res;
+    }
+public:
+    int rob(vector<int>& nums) {
+        int n = nums.size();
+        if( n ==1 ) {
+            return nums[0];
+        }
+        dp = vector<int>(n, -1);
+        //[l,r]
+        int max1 = doRob(nums, 0, n-2);
+        dp = vector<int>(n, -1);
+        int max2 = doRob(nums, 1, n-1);
+        return max(max1, max2);
+    }
+};
+//自顶向下
+
+/*******************************************************************************
+例题：337 house robber III
 
 *******************************************************************************/
 
 
 
 /*******************************************************************************
-例题：
-
-*******************************************************************************/
-
-
-
-/*******************************************************************************
-例题：
-
-*******************************************************************************/
-
-
-
-/*******************************************************************************
-例题：
-
-*******************************************************************************/
-
-
-
-/*******************************************************************************
-例题：
-
-*******************************************************************************/
-
-
-
-/*******************************************************************************
-例题：
-
-*******************************************************************************/
-
-
-
-/*******************************************************************************
-例题：
-
-*******************************************************************************/
-
-
-
-/*******************************************************************************
-例题：
-
-*******************************************************************************/
-
-
-
-/*******************************************************************************
-例题：
-
-*******************************************************************************/
-
-
-
-/*******************************************************************************
-例题：
-
-*******************************************************************************/
-
-
-
-/*******************************************************************************
-例题：
-
-*******************************************************************************/
-
-
-
-/*******************************************************************************
-例题：
+例题：309 best time to buy and sell stock with cooldown
 
 *******************************************************************************/
 
