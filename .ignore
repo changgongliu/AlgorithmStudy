@@ -5,3 +5,5 @@ Debug/
 ipch/
 ./pratice/*
 ./GraphWeight/*
+*.tlog
+./GraphWeight/*
