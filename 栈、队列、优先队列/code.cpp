@@ -1164,11 +1164,59 @@ public:
 
 
 /*******************************************************************************
-例题：
-
+例题：0-1背包问题
+leetcode 没有专门的问题
+记忆化搜索空间-二维数组
 *******************************************************************************/
+//自上而下记忆化搜索
+//二维数组
+//F(n,c)将n个物品放入容量为C的背包中,前提是每个物品只有一件
+//[0,index]
+vector< vector<int>> dp;
+int bestValue(const vector<int> &w, const vector<int> &v, int index, int c){
+    if( index < 0 || c <= 0)//index 为0时有值
+        return 0;
+    if( dp[index][c] != -1)
+        return dp[index][c];
+    int res = 0;
+    res = bestValue(w, v, index-1, c);
+    if( w[index] <= c){
+        res = max(res, v[index] + bestValue(w, v, index-1, c-w[index]));
+    }
+    dp[index][c] = res;
+    return res;
+}
+//可以多申请空间
+int knapsack01(const vector<int> &w, const vector<int> &v, int C){
+    assert(w.size() == v.size());
+    int n = w.size();
+    dp = vector< vector<int>>(n ,vector<int>(C+1,-1));
+    return bestValue(w, v, n-1, C);
+}
 
-
+//自底向上的求解背包问题
+//二维数组解决问题
+int knapsack01(const vector<int> &w, const vector<int> &v, int C){
+    assert( w.size() == v.size());
+    int n = w.size();
+    if( n==0)
+        return 0 ; 
+    dp = vector< vector<int>>(n, vector(C+1), 0);
+    //F(0,x) //index代表索引
+    // 排除index=0，的元素，但是index更大的元素也可能是0
+    for(int i = 1; i<=c; i++){
+        dp[0][i] = (i>=w[0]?v[0]:0);
+    }
+    for(int i = 1; i < n; i ++){
+        for(int j = 0; j <= C; j++){
+            dp[i][j] = dp[i-1][j];
+            if(w[i] <= j){
+                dp[i][j] = max(dp[i][j], v[i]+dp[i-1][j-w[i]]); 
+            }
+        }
+    }
+    return dp[n-1][C];
+}
 
 /*******************************************************************************
 例题：
