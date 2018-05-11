@@ -1115,6 +1115,8 @@ public:
 //case1：去掉最后一家
 //case2：去掉第一家
 //特殊考虑：数组长度为1的情况
+#include <iostream>
+using namespace std;
 class Solution {
 private:
     vector<int> dp;
