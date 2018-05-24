@@ -7,6 +7,10 @@
  *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
  * };
  */
+#include <iostream>
+#include <vector>
+#include "assert.h"
+using namespace std;
  /*******************************************************************************
  例题:20
 
@@ -1217,51 +1221,207 @@ int knapsack01(const vector<int> &w, const vector<int> &v, int C){
     }
     return dp[n-1][C];
 }
+//简化空间复杂度
+//只需要两行空间
+int knapsack01(const vector<int> &w, const vector<int> &v, int C){
+    assert( w.size() == v.size());
+    int n = w.size();
+    if( n==0)
+        return 0 ; 
+    dp = vector< vector<int>>(2, vector(C+1), 0);
+    //F(0,x) //index代表索引
+    // 排除index=0，的元素，但是index更大的元素也可能是0
+    for(int i = 1; i<=c; i++){
+        dp[0][i] = (i>=w[0]?v[0]:0);
+    }
+    for(int i = 1; i < n; i ++){
+        for(int j = 0; j <= C; j++){
+            dp[i%2][j] = dp[(i-1)%2][j];
+            if(w[i] <= j){
+                dp[i%2][j] = max(dp[i%2][j], v[i]+dp[(i-1)%2][j-w[i]]); 
+            }
+        }
+    }
+    return dp[(n-1)][C];
+}
+//继续简化空间
+//采用一行空间,可以优化空间，又能优化时间
+int knapsack01(const vector<int> &w, const vector<int> &v, int C){
+    assert( w.size() == v.size());
+    int n = w.size();
+    if( n==0)
+        return 0 ; 
+    dp = vector<int>(C+1), 0);
+    //F(0,x) //index代表索引
+    // 排除index=0，的元素，但是index更大的元素也可能是0
+    for(int i = 1; i<=c; i++){
+        dp[i] = (i>=w[0]?v[0]:0);
+    }
+    for(int i = 1; i < n; i ++){
+        for(int j = C; j >= w[i]; j--){
+            dp[j] = max(dp[j], v[i]+dp[j-w[i]]); 
+        }
+    }
+    return [C];
+}
+/*******************************************************************************
+例题：416 
+典型背包问题，在n个物品中选出一定物品，填满sum/2的背包
+*******************************************************************************/
+//F(n,C)
+//F(n,C)=F(i-1,C) || F(i-1, C-w(i))
+//时间复杂度：o(n*(sum/2)= o(n*sum)
+//记忆化搜索过程
+
+class Solution {
+private:
+    //0-不能实现，1-可以实现，-1-未查询
+    vector< vector<int>> dp;
+    int tryPartition(vector<int>& nums, int index, int sum){
+        if(sum < 0 || index < 0)
+            return 0;
+        if(sum == 0 )
+            return 1;
+        if(dp[index][sum] != -1)
+            return dp[index][sum];
+        dp[index][sum] = (tryPartition(nums, index-1, sum)==1 || tryPartition(nums, index-1, sum-nums[index]) == 1);
+        return dp[index][sum];
+    }
+public:
+    bool canPartition(vector<int>& nums) {
+        int n = nums.size();
+        assert(n>0);
+        int sum = 0;
+        for( int i = 0; i<n; i ++){
+            sum += nums[i];
+        }
+        if(sum%2 != 0)
+            return false;
+        cout<<sum/2<<endl;
+        dp = vector<vector<int>>(n, vector<int>(sum/2+1, -1));
+        return tryPartition(nums, n-1, sum/2)==1;
+    }
+};
+
+
+//自下而上的方式
+//理解含义，F(n,C),将0-n个元素放入容量为C的背包中
+bool canPartition(vector<int>& nums){
+    vector<bool> dp1;
+    int n = nums.size();
+    assert(n>0);
+    int sums = 0;
+    for(int i = 0; i < n; i++){
+        sums += nums[i];
+    }
+    if(sums%2 != 0)
+        return false;
+    int C = sums/2;
+    dp1 = vector<bool>(sums/2+1,false);
+    for( int i = 1; i <= sums/2; i ++){
+        dp1[i] =  nums[0]==i;
+    }
+    for(int i = 1; i< n; i ++){
+        for(int j = C; j >= nums[i]; j--){
+            dp1[j] = dp1[j] || dp1[j-nums[i]];
+        }
+    }
+    return dp1[C];
+}
+
 
 /*******************************************************************************
-例题：
+例题：322 coin change 
+???????????????????????????????????
+*******************************************************************************/
+//先通过自上而下，记忆化搜索的方式
+class Solution {
+private:
+    vector< vector<int>> dp;
+    //[0..index]
+    int doCoinChange(vector<int>& coins, int index, int amount){
+        if(index < 0 || amount < 0)
+            return -1;
+        int res = INT_MAX;
+        if(0 == amount)
+            return 0;       
+        if(-1 != dp[index][amount])
+            return dp[index][amount];
+        for( int i = 1; i <= amount/coins[index]; i++){
+            // int resTmp = doCoinChange(coins, index-1, (amount-i*coins[index]));
+            // if( -1 == resTmp)
+            //     continue;
+            // res = min(res, resTmp+i);
+            for
+        }
+        dp[index][amount] = res;
+        return res;
+    }
+public:
+    int coinChange(vector<int>& coins, int amount) {
+        int n = coins.size();
+        if(0 == amount)
+            return 0;
+        if( 0 == n)
+            return -1;
+        dp = vector< vector<int>>(n, vector<int>(amount,-1));
+        return doCoinChange(coins, n-1, amount);
+
+    }
+};
+
+//自底向上的方式
+class Solution {
+public:
+    int coinChange(vector<int>& coins, int amount) {
+        int Max = amount + 1;
+        vector<int> dp(amount + 1, Max);
+        dp[0] = 0;
+        for (int i = 1; i <= amount; i++) {
+            for (int j = 0; j < coins.size(); j++) {
+                if (coins[j] <= i) {
+                    dp[i] = min(dp[i], dp[i - coins[j]] + 1);
+                }
+            }
+        }
+        return dp[amount] > amount ? -1 : dp[amount];
+    }
+};
+
+
+/*******************************************************************************
+例题：377
+
+*******************************************************************************/
+class Solution {
+public:
+
+};
+
+
+/*******************************************************************************
+例题：139
 
 *******************************************************************************/
 
 
 
 /*******************************************************************************
-例题：
+例题：494
 
 *******************************************************************************/
 
 
 
 /*******************************************************************************
-例题：
+例题：300
 
 *******************************************************************************/
 
 
 
 /*******************************************************************************
-例题：
-
-*******************************************************************************/
-
-
-
-/*******************************************************************************
-例题：
-
-*******************************************************************************/
-
-
-
-/*******************************************************************************
-例题：
-
-*******************************************************************************/
-
-
-
-/*******************************************************************************
-例题：
+例题：376
 
 *******************************************************************************/
 
