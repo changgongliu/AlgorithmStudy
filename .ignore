@@ -7,3 +7,4 @@ ipch/
 ./GraphWeight/*
 *.tlog
 ./GraphWeight/*
+.vscode/*
