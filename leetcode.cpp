@@ -182,4 +182,6 @@ string longestPalindrome(string s) {
 //93.Restore IP Address
     vector<string> restoreIpAddresses(string s) {
         vector<string> res;
+        int len = s.size();
+        
     }
