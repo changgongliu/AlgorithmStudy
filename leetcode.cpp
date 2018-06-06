@@ -180,8 +180,52 @@ string longestPalindrome(string s) {
         return res;
     }
 //93.Restore IP Address
-    vector<string> restoreIpAddresses(string s) {
-        vector<string> res;
-        int len = s.size();
-        
+//1. 首位字符为0, 则只能取一位
+//2. 首位不为零, 长度>=2, 可以取2位
+//3. 首位不为0, 长度>=3, 并且取三位得到的整数<256, 则可取三位
+    void DFS(string s, string str, int k)  
+    {  
+        if(s.size()==0 && k==4) return ans.push_back(str.substr(0, str.size()-1));  
+        if(s.size()==0 || k== 4) return;  
+        for(int i = 1; i <= min(3, (int)s.size()); i++)  
+        {  
+            int val = stoi(s.substr(0,i));  
+            if(val >=0 && val <= 255)  
+                DFS(s.substr(i), str+s.substr(0,i)+".", k+1);  
+            if(s[0] == '0') break;  
+        }  
+    }  
+    vector<string> restoreIpAddresses(string s) {  
+        if(s.size()==0) return ans;  
+        DFS(s, "", 0);  
+        return ans;  
+    }   
+    vector<string> ans;  
+
+// 131 Palindrome Partitioning
+class Solution {
+private:
+    vector<vector<string>> ans;
+    void DFS(string s, vector<string> str) {
+        if(s.size() == 0) {
+            ans.push_back(str);
+            return;
+        }
+        for( int i = 0; i < s.size(); ++i) {
+            str.push_back(s.substr(i,i));
+            DFS(s.substr(i), str);
+            while(i < s.size()-1 && s[i] == s[i+1]) {
+                str.push_back(s.substr(i,i+1));
+                DFS(s.substr(i), str);
+                ++ i;
+            }
+        }
     }
+public:
+    vector<vector<string>> partition(string s) {
+        if(s.empty()) return ans;
+        vector<string> str;
+        DFS(s, str);
+        return ans;
+    }    
+};

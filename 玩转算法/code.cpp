@@ -1431,14 +1431,79 @@ public:
 例题: 17.letter combination of a phone number
 
 *******************************************************************************/
-
+#include "assert.h"
+    const string lettersMap[10] = {
+        "",     //0
+        "",      //1
+        "abc",   //2
+        "def",   //3
+        "ghi",   //4
+        "jkl",   //5
+        "mno",   //6
+        "pqrs",  //7
+        "tuv",   //8
+        "wxyz",  //9
+    };
+    vector<string> res;
+    //tmp 表示[0..index-1]组成的字符串
+    void findCombinations(string &digits, int index, const string &tmp) {
+        if( index == digits.size()){
+            res.push_back(tmp);
+            return;
+        }
+        char letter = digits[index];
+        assert(letter>= '2' && letter <= '9');
+        string letters = lettersMap[letter-'0'];
+        for( int i = 0; i < letters.size(); i ++) {
+            
+            findCombinations(digits, index + 1, tmp + letters[i]);
+        }
+        return;
+    }
+    vector<string> letterCombinations(string digits) {
+        if(digits.empty())
+            return res;
+        findCombinations(digits,0, "");
+        return res;
+    }
 
 
 /*******************************************************************************
-例题：
+例题：93 resotre ip address
 
 *******************************************************************************/
-
+//复杂用例:010010
+    vector<string> res;
+    bool isValid( string s) {
+        return stoi(s) < 256 ? true : false;
+    }
+    void doRestore(string &s, int index, const string tmp, int points) {
+        if(index == s.size() && points == 4) {
+            res.push_back(tmp);
+            return;
+        }
+        string result = "";
+        int top = index + 3;
+        for(; index < s.size() && index < top; index ++) {
+            result += s[index];
+            if( points == 0) {
+                doRestore(s, index + 1, result + '.', points + 1);
+            }
+            else if( isValid(result) && points < 3)
+                doRestore(s, index + 1, tmp + result + '.', points + 1);
+            else if( isValid(result) && points == 3)
+                doRestore(s, index + 1, tmp + result, points + 1);
+            else
+                break;
+        }
+        return;
+    }
+    vector<string> restoreIpAddresses(string s) {
+        if(s.empty()) 
+            return res;
+        doRestore(s, 0, "", 0);
+        return res;
+    }
 
 
 /*******************************************************************************
