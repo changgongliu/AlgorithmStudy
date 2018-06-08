@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include "assert.h"
 using namespace std;
 class Solution1 {
 private:
@@ -30,7 +31,7 @@ public:
 
     }
 };
-class Solution {
+class Solution2 {
 public:
 vector<string> work(int k) {
     vector<string> res;
@@ -56,11 +57,103 @@ vector<string> work(int k) {
         return work(num);
     }
 };
+class Solution3 {
+    int m = 0, n = 0;
+    int suqare[4][2] = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+    vector<vector<bool>> visited;
+    bool isInArea(int x, int y) {
+        return x>=0 && x < m && y >= 0 && y < n;
+    }
+    void searchIsland(vector<vector<char>>& grid, int startX, int startY) {
+        visited[startX][startY] = true;
+
+        for(int i = 0; i < 4; i ++) {
+            int newX = startX + suqare[i][0];
+            int newY = startY + suqare[i][1];
+            if(isInArea(newX, newY) && !visited[newX][newY] && grid[newX][newY] == '1') {
+                searchIsland(grid, newX, newY);
+            }
+        }
+        return;
+    }
+public:
+    int numIslands(vector<vector<char>>& grid) {
+
+        int res = 0;
+        if(grid.size() == 0)
+            return res;
+        
+        m = grid.size();
+        assert(m>0);
+        n = grid[0].size();
+
+        visited = vector<vector<bool>>(m ,vector<bool>(n, false));
+        for( int i = 0; i < m; i++) {
+            for(int j = 0; j < n; j++){
+                if(isInArea(i, j) && grid[i][j] == '1' && !visited[i][j]) {
+                    searchIsland(grid, i, j);
+                    res ++;
+                }
+            }
+        }
+        return res;
+    }
+};
+class Solution {
+    int m = 0, n = 0;
+    int suqare[4][2] = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+    vector<vector<bool>> visited;
+    bool isInArea(int x, int y) {
+        return x>=1 && x < m-1 && y >= 1 && y < n-1;
+    }
+    void searchAndSolve(vector<vector<char>>& board, int startX, int startY) {
+        board[startX][startY] = 'X';
+        visited[startX][startY] = true;
+        for(int i = 0; i < 4; i ++) {
+            int newX = startX + suqare[i][0];
+            int newY = startY + suqare[i][1];
+            if(isInArea(newX, newY) && board[newX][newY] == 'O' && !visited[newX][newY]) {
+                if(board[startX][startY] == 'O'){
+                    visited[newX][newY] = true;
+                    return;
+                }               
+                searchAndSolve(board, newX, newY);
+                if(board[newX][newY] == 'O'){
+                    board[startX][startY] = 'O';
+                    return;
+                }
+                   
+            }
+            else if(!isInArea(newX, newY) && board[newX][newY] == 'O') {
+                board[startX][startY] = 'O';
+                break;
+            }
+        }
+        return;
+    }
+public:
+    void solve(vector<vector<char>>& board) {
+        if(board.size() == 0)
+            return;
+        
+        m = board.size();
+        assert(m>0);
+        n = board[0].size();
+
+        visited = vector<vector<bool>>(m ,vector<bool>(n, false));       
+        for( int i = 1; i < m-1; i++) {
+            for(int j = 1; j < n-1; j++){
+                if(isInArea(i, j) && board[i][j] == 'O' && !visited[i][j]) {
+                    searchAndSolve(board, i, j);
+                }
+            }
+        }
+        return;       
+    }
+};
 int main() {
-   Solution tmp = Solution();
-   int n = 1;
-   int i = (1<<10);
-   cout<<(1<<10)<<endl;
-   tmp.work(n);
-   return 0;
+    Solution tmp = Solution();
+    vector<vector<char>> grid = {{'O','X','X','O','X'},{'X','O','O','X','O'},{'X','O','X','O','X'},{'O','X','O','O','O'},{'X','X','O','X','O'}};
+    tmp.solve(grid);
+    return 0;
 }

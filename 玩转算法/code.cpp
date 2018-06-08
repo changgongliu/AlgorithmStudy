@@ -1914,15 +1914,143 @@ public:
 例题：200 number of islands
 
 *******************************************************************************/
+class Solution {
+    int m = 0, n = 0;
+    int suqare[4][2] = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+    vector<vector<bool>> visited;
+    bool isInArea(int x, int y) {
+        return x>=0 && x < m && y >= 0 && y < n;
+    }
+    void searchIsland(vector<vector<char>>& grid, int startX, int startY) {
+        visited[startX][startY] = true;
 
+        for(int i = 0; i < 4; i ++) {
+            int newX = startX + suqare[i][0];
+            int newY = startY + suqare[i][1];
+            if(isInArea(newX, newY) && !visited[newX][newY] && grid[newX][newY] == '1') {
+                searchIsland(grid, newX, newY);
+            }
+        }
+        return;
+    }
+public:
+    int numIslands(vector<vector<char>>& grid) {
+
+        int res = 0;
+        if(grid.size() == 0)
+            return res;
+        
+        m = grid.size();
+        assert(m>0);
+        n = grid[0].size();
+
+        visited = vector<vector<bool>>(m ,vector<bool>(n, false));
+        for( int i = 0; i < m; i++) {
+            for(int j = 0; j < n; j++){
+                if(isInArea(i, j) && grid[i][j] == '1' && !visited[i][j]) {
+                    searchIsland(grid, i, j);
+                    res ++;
+                }
+            }
+        }
+        return res;
+    }
+};
 
 
 /*******************************************************************************
-例题：
+例题：130Surround regions
 
 *******************************************************************************/
+class Solution {
+    int m = 0, n = 0;
+    int suqare[4][2] = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+    //vector<vector<bool>> visited;
+    bool isInArea(int x, int y) {
+        return x>=1 && x < m-1 && y >= 1 && y < n-1;
+    }
+    void searchAndSolve(vector<vector<char>>& board, int startX, int startY) {
+        board[startX][startY] = 'X';
+    
+        for(int i = 0; i < 4; i ++) {
+            int newX = startX + suqare[i][0];
+            int newY = startY + suqare[i][1];
+            if(isInArea(newX, newY) && board[newX][newY] == 'O') {
+                searchAndSolve(board, newX, newY);
+            }
+            else if(!isInArea(newX, newY)) {
+                board[startX][startY] = 'O';
+                break;
+            }
+        }
+        return;
+    }
+public:
+    void solve(vector<vector<char>>& board) {
+        if(board.size() == 0)
+            return;
+        
+        m = board.size();
+        assert(m>0);
+        n = board[0].size();
 
+        //visited = vector<vector<bool>>(m ,vector<bool>(n, false));       
+        for( int i = 1; i < m-1; i++) {
+            for(int j = 1; j < n-1; j++){
+                if(isInArea(i, j) && board[i][j] == 'O') {
+                    searchAndSolve(board, i, j);
+                }
+            }
+        }
+        return;       
+    }
+};
+//以上并不能解决问题，并且还没有找着合适的方式
+class Solution {
+    int m = 0, n = 0;
+    int suqare[4][2] = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+    //vector<vector<bool>> visited;
+    bool isInArea(int x, int y) {
+        return x>=1 && x < m-1 && y >= 1 && y < n-1;
+    }
+    void changeSquareO(vector<vector<char>>& board, int startX, int startY) {
+        board[startX][startY] = '%';
+    
+        for(int i = 0; i < 4; i ++) {
+            int newX = startX + suqare[i][0];
+            int newY = startY + suqare[i][1];
+            if(isInArea(newX, newY) && board[newX][newY] == 'O') {
+                changeSquareO(board, newX, newY);
+            }
+        }
+        return;
+    }
+public:
+    void solve(vector<vector<char>>& board) {
+        if(board.size() == 0 || board[0].size() == 0)
+            return;
+        
+        m = board.size();
+        assert(m>0);
+        n = board[0].size();
 
+        //visited = vector<vector<bool>>(m ,vector<bool>(n, false));       
+        for( int i = 0; i < m; i++) {
+            for(int j = 0; j < n; j++){
+                if((i == 0 || i == m-1 || j == 0 || j == n-1) && board[i][j] == 'O') {
+                    changeSquareO(board, i, j);
+                }
+            }
+        }
+        for(int i = 0; i < m; i++) {
+            for(int j = 0; j < n; j++) {
+                if(board[i][j] == 'O') board[i][j] = 'X';
+                if(board[i][j] == '%') board[i][j] = 'O';
+            }
+        }
+        return;       
+    }
+};
 
 /*******************************************************************************
 例题：
