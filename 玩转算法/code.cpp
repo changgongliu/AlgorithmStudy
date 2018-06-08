@@ -1507,63 +1507,300 @@ public:
 
 
 /*******************************************************************************
-例题：
+例题： 46.Permutations
 
 *******************************************************************************/
+class Solution {
+private:
+    vector<vector<int>> ans;
+    vector<bool> flag;
+    //index表示str中元素个数
+    void backTracking(const vector<int>& nums, vector<int>& str, int index) {
+        if(index == nums.size())   {
+            ans.push_back(str);
+            return;
+        }
+        for( int i = 0; i< nums.size(); ++ i) {
+            if(!flag[i]) {
+                str.push_back(nums[i]);
+                flag[i] = true;
+                backTracking(nums, str, index ++);//问题处在index++上，先使用index，在进行++
+                str.pop_back();
+                flag[i] = false;
+            }
+        }
+        return;
+    }
+public:
+    vector<vector<int>> permute(vector<int>& nums) {
+        ans.clear();
+        if(nums.size() == 0)
+            return ans;
+        vector<int> p;
+        flag = vector<bool>(nums.size(), false);
+        backTracking(nums, p, 0);
+        return ans;
+    }
+};
+
+
+/*******************************************************************************
+例题：47Permutation II
+
+*******************************************************************************/
+#include <map>
+#include <algorithm>
+class Solution {
+private:
+    vector<vector<int>> ans;
+    vector<bool> used;
+    void generatePermute(vector<int>& nums, int index, vector<int>& p) {
+        if( index == nums.size()) {
+            ans.push_back(p);
+            return;
+        }
+        for( int i = 0; i < nums.size(); ++i) {
+            if(!used[i]) {
+                while(i < nums.size()-1 && nums[i] == nums[i+1] && !used[i+1]) {
+                        ++i;
+                } 
+                used[i] = true;
+                p.push_back(nums[i]);
+                generatePermute(nums, index+1, p);
+
+                p.pop_back();
+                used[i] = false;
+            }
+        }
+        return;
+    }
+public:
+    vector<vector<int>> permuteUnique(vector<int>& nums) {
+        if(nums.size() == 0) {
+            return ans;
+        }
+        used = vector<bool>(nums.size(), false);
+        vector<int> p;
+        sort(nums.begin(), nums.end());
+        generatePermute( nums, 0, p);
+        return ans;
+    }
+};
+
+/*******************************************************************************
+例题：77 Combinations
+
+*******************************************************************************/
+class Solution {
+private:
+    vector<vector<int> > ans;
+    void generateCombine(const int& n, int k, vector<int>& p, int index) {
+        if(k == 0) {
+            ans.push_back(p);
+            return;
+        }
+        for(int i = index; i <= n-k+1; ++i) {//减去不必要的递归
+            p.push_back(i);
+            generateCombine(n, k-1, p, i+1);
+
+            p.pop_back();
+        }
+        return;
+    }
+public:
+    vector<vector<int> > combine(int n, int k) {
+        ans.clear();
+        if( n == 0 || k ==0 || k > n)
+            return ans;
+        vector<int> p;
+        generateCombine(n, k, p, 1);
+        return ans; 
+    }
+};
+
+
+/*******************************************************************************
+例题：39.Combination Sum
+
+*******************************************************************************/
+class Solution {
+private:
+    vector<vector<int>> ans;
+    void generateCombinationSum(vector<int>& candidates, int target, vector<int>& p) {
+        if(target == 0) {
+             ans.push_back(p);
+             return;
+        }
+        if( target < 0 )
+            return;
+        for(int i = 0; i < candidates.size() && candidates[i] <= target; ++ i) {
+            if( p.size() > 0 && candidates[i] < p[p.size()-1])//进行这个判断，首先candidates是有序的
+                continue;
+            p.push_back(candidates[i]);
+            generateCombinationSum(candidates, target-candidates[i], p);
+
+            p.pop_back();
+        }
+        return;
+    }
+public:
+    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+        if(candidates.size() == 0 || target <= 0)
+            return ans;
+        sort(candidates.begin(), candidates.end());
+        vector<int> p;   
+        generateCombinationSum(candidates, target , p);
+        return ans;
+    }
+};
+
+
+/*******************************************************************************
+例题：40.Combination Sum II
+
+*******************************************************************************/
+class Solution {
+private:
+    vector<vector<int>> ans;
+    void generateCombinationSum(vector<int>& candidates, int target, vector<int>& p, int index) {
+        if(target == 0) {
+             ans.push_back(p);
+             return;
+        }
+        if( target < 0 || index == candidates.size())
+            return;
+        for(int i = index; i < candidates.size() && candidates[i] <= target; ++ i) {//
+            if(i > index && candidates[i] == candidates[i-1]){  //同一层不能出现相同值,只考虑当前层，已经包含了下一层所有情况，所以已经包含了这一层下一次又出现相同数的情况
+                continue;  
+            }
+            p.push_back(candidates[i]);
+            generateCombinationSum(candidates, target-candidates[i], p, i+1);
+
+            p.pop_back();
+        }
+        return;
+    }
+public:
+    vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
+        if(candidates.size() == 0 || target <= 0)
+            return ans;
+        sort(candidates.begin(), candidates.end());
+        vector<int> p;   
+        generateCombinationSum(candidates, target , p, 0);
+        return ans;
+    }
+};
+
+
+/*******************************************************************************
+例题：216 Combination Sum III
+
+*******************************************************************************/
+class Solution {
+private:
+    vector<vector<int>> ans;
+    void generateCombinationSum(int k, int n, vector<int>& p) {
+        if(k==0 && n == 0) {
+             ans.push_back(p);
+             return;
+        }
+        if( n < 0 || k <0)
+            return;
+        for(int i = 1; i <= 9; ++ i) {
+            if( p.size() > 0 && i <= p[p.size()-1])
+               continue;
+            p.push_back(i);
+            generateCombinationSum(k-1, n-i, p);
+
+            p.pop_back();
+        }
+        return;
+    }
+public:
+    vector<vector<int>> combinationSum3(int k ,int n) {
+        if(k <= 0 || n <= 0)
+            return ans;
+        vector<int> p;   
+        generateCombinationSum(k, n, p);
+        return ans;
+    }
+};
+
+
+/*******************************************************************************
+例题：78.Subsets 
+
+*******************************************************************************/
+//#include <vector>
+//using namespace std;
+class Solution {
+private:
+    vector<vector<int>> ans;
+    void generateSubsets(const vector<int>& nums, vector<int>& p, int index) {
+        //if(p.size() != 0) {
+            ans.push_back(p);//将所有可能集合放入，只有在第一次时为空集
+        //}
+        if(index == nums.size())
+            return;
+        for(int i = index; i < nums.size(); ++i) {
+            p.push_back(nums[i]);
+            generateSubsets(nums, p, i+1);
+
+            p.pop_back();
+        }
+        return;
+    }
+public:
+    vector<vector<int>> subsets(vector<int>& nums) {
+        if(nums.size() == 0)
+            return ans;
+        
+        vector<int> p;
+        generateSubsets(nums, p, 0);
+        return ans;
+    }
+};
+
+
+/*******************************************************************************
+例题：90.Subsets II
+
+*******************************************************************************/
+class Solution {
+private:
+    vector<vector<int>> ans;
+    void generateSubsets(const vector<int>& nums, vector<int>& p, int index) {
+        //if(p.size() != 0) {
+        ans.push_back(p);//将所有可能集合放入，只有在第一次时为空集
+        //}
+        if(index == nums.size())
+            return;
+        for(int i = index; i < nums.size(); ++i) {
+            if(i > index && nums[i] == nums[i-1])//此处nums[i] == nums[i-1]  与 nums[i] == nums[i+1]是不同的，执行第一个值，跳过后边的值，还是跳过第一个值，执行后边的值
+                continue;
+            p.push_back(nums[i]);
+            generateSubsets(nums, p, i+1);
+
+            p.pop_back();
+        }
+        return;
+    }
+public:
+    vector<vector<int>> subsetsWithDup(vector<int>& nums) {
+        if(nums.size() == 0)
+            return ans;
+        
+        vector<int> p;
+        sort(nums.begin(), nums.end());
+        generateSubsets(nums, p, 0);
+        return ans;
+    }
+};
 
 
 
 /*******************************************************************************
-例题：
-
-*******************************************************************************/
-
-
-
-/*******************************************************************************
-例题：
-
-*******************************************************************************/
-
-
-
-/*******************************************************************************
-例题：
-
-*******************************************************************************/
-
-
-
-/*******************************************************************************
-例题：
-
-*******************************************************************************/
-
-
-
-/*******************************************************************************
-例题：
-
-*******************************************************************************/
-
-
-
-/*******************************************************************************
-例题：
-
-*******************************************************************************/
-
-
-
-/*******************************************************************************
-例题：
-
-*******************************************************************************/
-
-
-
-/*******************************************************************************
-例题：
+例题： 401.Binary Watch
 
 *******************************************************************************/
 
