@@ -1,8 +1,9 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <sstream>
 using namespace std;
-class Solution {
+class Solution1 {
 private:
     vector<vector<int> > ans;
     void generateCombine(const int& n, int k, vector<int>& p, int index) {
@@ -29,10 +30,37 @@ public:
 
     }
 };
-
+class Solution {
+public:
+vector<string> work(int k) {
+    vector<string> res;
+    if(k > 10) return res;
+    for (int i = 0; i < (1 << 10); i++) {
+        if(__builtin_popcount(i) == k) {
+            int h = i >> 6;
+            if(h > 11) continue;
+            int m = i & ((1 << 6) - 1);
+            if(m > 59) continue;
+            stringstream ss;
+            ss << h;
+            ss << ":";
+            if(m < 10) ss << "0";
+            ss << m;
+            string x = ss.str();
+            res.push_back(x);
+        }
+    }
+    return res;
+}
+   vector<string> readBinaryWatch(int num) {
+        return work(num);
+    }
+};
 int main() {
    Solution tmp = Solution();
-   int n = 4, k = 2;
-   tmp.combine(n, k);
+   int n = 1;
+   int i = (1<<10);
+   cout<<(1<<10)<<endl;
+   tmp.work(n);
    return 0;
 }

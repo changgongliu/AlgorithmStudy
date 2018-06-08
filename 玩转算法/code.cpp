@@ -1803,18 +1803,115 @@ public:
 例题： 401.Binary Watch
 
 *******************************************************************************/
-
+class Solution {
+public:
+vector<string> work(int k) {
+    vector<string> res;
+    if(k > 10) return res;
+    for (int i = 0; i < (1 << 10); i++) {
+        if(__builtin_popcount(i) == k) {
+            int h = i >> 6;
+            if(h > 11) continue;
+            int m = i & ((1 << 6) - 1);
+            if(m > 59) continue;
+            stringstream ss;
+            ss << h;
+            ss << ":";
+            if(m < 10) ss << "0";
+            ss << m;
+            string x = ss.str();
+            res.push_back(x);
+        }
+    }
+    return res;
+}
+   vector<string> readBinaryWatch(int num) {
+        return work(num);
+    }
+};
+//也可采用c++的bitset标准库
+#include<bitset>
+#include<sstream>
+class Solution {
+private:
+    vector<string> work(int k) {
+        vector<string> res;
+        if(k > 10) return res;
+        for (int i = 0; i < (1 << 10); i++) {
+            if(bitset<10>(i).count() == k) {
+                int h = i >> 6;
+                if(h > 11) continue;
+                int m = i & ((1 << 6) - 1);
+                if(m > 59) continue;
+                stringstream ss;
+                ss << h;
+                ss << ":";
+                if(m < 10) ss << "0";
+                ss << m;
+                string x = ss.str();
+                res.push_back(x);
+            }
+        }
+        return res;
+    }
+public:
+  vector<string> readBinaryWatch(int num) {
+        return work(num);
+    }
+};
 
 
 /*******************************************************************************
-例题：
+例题：79Word Search
 
 *******************************************************************************/
-
+class Solution {
+private:
+    int m = 0, n = 0;
+    vector<vector<bool>> used;
+    int square[4][2] = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+    bool isInArea(int startX, int startY) {
+        return startX>=0 && startX<m && startY>=0 && startY < n;
+    }
+    bool isExist(vector<vector<char>>& board, string word, int index, int startX, int startY) {
+        if(index == word.size() - 1)
+            return board[startX][startY] == word[index];
+        if(isInArea(startX, startY) && board[startX][startY] == word[index]) {
+            used[startX][startY] = true;
+            for( int i = 0; i < 4; ++i) {
+                //四个方向进行移动
+                int newX = startX + square[i][0];
+                int newY = startY + square[i][1];
+                if(isInArea(newX, newY) && !used[newX][newY]){
+                    if(isExist(board, word, index+1, newX, newY))
+                        return true;
+                }
+            }           
+            used[startX][startY] = false;
+        }
+        return false; 
+    }
+public:
+    bool exist(vector<vector<char>>& board, string word) {
+        if(board.size() == 0 || word.size() == 0)
+            return false;
+        m = board.size();
+        assert(m>0);
+        n = board[0].size();    
+        used = vector<vector<bool>>(m, vector<bool>(n, false));
+        for(int i = 0; i < m; ++i) {
+           for(int j = 0; j < board[i].size(); ++j) {
+               if(isExist(board, word, 0, i, j))
+                    return true;
+            } 
+        }
+        return false;    
+    }
+};
 
 
 /*******************************************************************************
-例题：
+例题：200 number of islands
 
 *******************************************************************************/
 
