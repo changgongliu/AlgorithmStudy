@@ -2053,31 +2053,165 @@ public:
 };
 
 /*******************************************************************************
-例题：
+例题： 417. Pacific Atlantic Water Flow
 
 *******************************************************************************/
 
 
 
 /*******************************************************************************
-例题：
+例题： 51 NQueens
 
 *******************************************************************************/
+class Solution {
+private:
+    vector<vector<string>> res;
+    vector<bool> col, diag1, diag2;
+    vector<string> generateString(int n, vector<int> Value) {
+        vector<string> res(n, string(n, '.'));
+        for(int i = 0; i < Value.size(); i ++)
+            res[i][Value[i]] = 'Q';
+        return res;
+    }
+    void putNQueens(int n, int index, vector<int>& tmp) {
+        if(index == n) {
+            res.push_back(generateString(n, tmp));
+            return;
+        }
 
+        for(int i = 0; i < n; i++) {
+            if(!col[i] && !diag1[index+i] &&!diag2[index-i+n-1]) {
+                tmp.push_back(i);
+                col[i] = true;
+                diag1[index+i] = true;
+                diag2[index-i+n-1] = true;
+                putNQueens(n, index+1, tmp);
+
+                col[i] = false;
+                diag1[index+i] = false;
+                diag2[index-i+n-1] = false;
+                tmp.pop_back(); 
+            }
+        }
+        return;
+    }
+public:
+    vector<vector<string>> solveNQueens(int n) {
+        res.clear();
+        if(n <= 0)
+            return res;
+        col = vector<bool>(n, false);
+        diag1 = vector<bool>(2*n - 1, false);
+        diag2 = vector<bool>(2*n - 1, false);
+        vector<int> tmp;
+        putNQueens(n, 0, tmp);
+        return res;
+    }
+};
 
 
 /*******************************************************************************
-例题：
+例题：52 N-Queens II
 
 *******************************************************************************/
+class Solution {
+private:
+    int res = 0;
+    vector<bool> col, diag1, diag2;
+    
+    void putNQueens(int n, int index, vector<int>& tmp) {
+        if(index == n) {
+            res ++;
+            return;
+        }
 
+        for(int i = 0; i < n; i++) {
+            if(!col[i] && !diag1[index+i] &&!diag2[index-i+n-1]) {
+                tmp.push_back(i);
+                col[i] = true;
+                diag1[index+i] = true;
+                diag2[index-i+n-1] = true;
+                putNQueens(n, index+1, tmp);
+
+                col[i] = false;
+                diag1[index+i] = false;
+                diag2[index-i+n-1] = false;
+                tmp.pop_back(); 
+            }
+        }
+        return;
+    }
+public:
+    int totalNQueens(int n) {
+        if(n <= 0)
+            return res;
+        col = vector<bool>(n, false);
+        diag1 = vector<bool>(2*n - 1, false);
+        diag2 = vector<bool>(2*n - 1, false);
+        vector<int> tmp;
+        putNQueens(n, 0, tmp);
+        return res;
+    }
+};
 
 
 /*******************************************************************************
-例题：
+例题：37.Sudoku Solver
 
 *******************************************************************************/
-
+class Solution {
+private:
+    vector<vector<bool>> mapRow;//表示第i行
+    vector<vector<bool>> mapCol;
+    vector<vector<bool>> mapArea;
+    bool doSolve(vector<vector<char>>& board, int count) {
+        if(count>=81)
+            return true;
+        for(int i = count; i < 81; i++) {
+            int row = i/9;
+            int col = i%9;
+            if(board[row][col] != '.')
+                continue;
+            for(int j = 0; j < 9; j++) {
+                int arg1 = row/3*3+col/3;
+                if(!mapRow[row][j] && !mapCol[col][j] && !mapArea[(row/3)*3 + col/3][j]) {
+                    mapRow[row][j] = true;
+                    mapCol[col][j] = true;
+                    mapArea[(row/3)*3+col/3][j] = true;
+                    board[row][col] = j+1+'0';
+                    if(doSolve(board, i+1)) 
+                        return true;
+                    mapRow[row][j] = false;
+                    mapCol[col][j] = false;
+                    mapArea[row/3*3+col/3][j] = false;
+                    board[row][col] = '.';
+                }
+            }
+            return false;
+        }
+        return true;
+    }
+public:
+    void solveSudoku(vector<vector<char>>& board) {
+        assert(board.size() == 9);
+        assert(board[0].size() == 9);
+        mapRow = vector<vector<bool>>(9, vector<bool>(9, false));
+        mapCol = vector<vector<bool>>(9, vector<bool>(9, false));
+        mapArea = vector<vector<bool>>(9, vector<bool>(9, false));
+        for(int i = 0; i < 9; i++) {
+            for(int j = 0; j < 9; j++) {
+                if(board[i][j] != '.') {
+                    int num = board[i][j]-'1';//索引从0开始
+                    mapRow[i][num] = true;
+                    mapCol[j][num] = true;//此处之前将j写成i，提高状态
+                    mapArea[(i/3)*3+(j/3)][num] = true;
+                }
+           }
+        }
+        doSolve(board, 0);
+        return;
+    }
+};
 
 
 /*******************************************************************************
