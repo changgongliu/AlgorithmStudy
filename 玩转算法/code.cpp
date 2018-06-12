@@ -1335,6 +1335,7 @@ bool canPartition(vector<int>& nums){
 ???????????????????????????????????
 *******************************************************************************/
 //先通过自上而下，记忆化搜索的方式
+#include "limits.h"
 class Solution {
 private:
     vector< vector<int>> dp;
@@ -2222,25 +2223,137 @@ public:
 
 
 /*******************************************************************************
-例题：
+例题：35.Search Insert Position
 
 *******************************************************************************/
-
+class Solution {
+private:
+    int findOrInsert(vector<int>& nums, int target, int lhs, int rhs) {
+        if(lhs >= rhs)
+            return max(lhs, rhs);
+        int mid = lhs + (lhs-rhs)/2;
+        if(target == nums[mid])
+            return mid;
+        else if(target < nums[mid])
+            rhs = mid-1;
+        else   
+            lhs = mid+1;
+        findOrInsert(nums, target, lhs, rhs);
+    }
+public:
+    int searchInsert(vector<int>& nums, int target) {
+        int res = 0;
+        if(nums.empty())
+            return res;
+        
+    }
+};
 
 
 /*******************************************************************************
-例题：
+例题：435 Non-overlapping intervals
 
 *******************************************************************************/
 
+//Definition for an interval.
+struct Interval {
+    int start;
+    int end;
+    Interval() : start(0), end(0) {}
+    Interval(int s, int e) : start(s), end(e) {}
+};
+
+class Solution {
+private:
+    bool compare(const Interval& x, const Interval& y) {//泛型算法要求
+        if(x.end != y.end)
+            return x.end < y.end;
+        return x.start < y.start;
+    }
+public:
+    //贪心算法
+    //每次选最早结束的，给以后留下的空间会更大
+    int eraseOverlapIntervals1(vector<Interval>& intervals) {
+        if(intervals.empty())
+            return 0;
+        sort(intervals.begin(), intervals.end(), compare);
+        int res = 1;
+        int pre = 0;
+        for(int i = 1; i < intervals.size(); i++) {
+            if(intervals[i].start >= intervals[pre].end) {
+                ++res;
+                pre= i;
+            }
+        }
+        return intervals.size() - res;
+    }
+    //dynamic pragraming
+    //use dynamic pragraming is too slow
+    int eraseOverlapIntervals(vector<Interval>& intervals) {
+        if(intervals.empty())
+            return 0;
+        sort(intervals.begin(), intervals.end(), compare);
+        int len = intervals.size();
+        vector<int> memo(len, 1);
+        for( int i = 0; i < len; i++) {
+            for(int j = 0; j < i; j ++) {
+                if(intervals[j].end <= intervals[i].start) {
+                    memo[i] = max(memo[i], memo[j]+1);
+                }               
+            }
+        }
+        int res = 0;
+        for(int i = 0; i < len; i ++) {
+            res = max(res, memo[i]);
+        } 
+        return len-res;
+    }
+};
 
 
 /*******************************************************************************
-例题：
+例题：455. Assign Cookies
 
 *******************************************************************************/
-
-
+class Solution {
+public:
+    //greed
+    int findContentChildren(vector<int>& g, vector<int>& s) {
+        if( g.empty() || s.empty())
+            return 0;
+        sort(g.begin(), g.end());
+        sort(s.begin(), s.end());
+        int res = 0;
+        int index = 0;
+        for(int i = 0; i < g.size() && index < s.size(); i++) {
+            while(index < s.size() && s[index] < g[i]) {
+                index++;
+                if(index == s.size())
+                    break;
+            }
+            res++;
+            index++;           
+        }
+        return res;
+    }
+};
+int findContentChildren(vector<int>& g, vector<int>& s) {
+    if( g.empty() || s.empty())
+        return 0;
+    sort(g.begin(), g.end());
+    sort(s.begin(), s.end());
+    int res = 0;
+    int index1 = 0;
+    int index2 = 0;
+    while(index1 < g.size() && index2 < s.size()) {
+        if(s[index2] >= g[index1]) {
+            index1++;
+            res++;
+        }//少一层else会大大加快速度
+        index2++;
+    }
+    return res;
+}
 
 /*******************************************************************************
 例题：

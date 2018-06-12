@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <algorithm>
 #include "assert.h"
 using namespace std;
 class Solution1 {
@@ -196,7 +197,7 @@ public:
         return res;
     }
 };
-class Solution {
+class Solution6 {
 private:
     vector<vector<bool>> mapRow;//表示第i行
     vector<vector<bool>> mapCol;
@@ -249,10 +250,59 @@ public:
         return;
     }
 };
+class Solution {
+private:
+    int findOrInsert(vector<int>& nums, int target, int lhs, int rhs) {
+        if(lhs == rhs) {
+            if(target < nums[lhs])
+                return lhs;
+            else
+                return lhs+1;
+        }
+        int mid = lhs + (rhs-lhs)/2;
+        if(target == nums[mid])
+            return mid;
+        else if(target < nums[mid])
+            rhs = mid-1;
+        else   
+            lhs = mid+1;
+        return findOrInsert(nums, target, lhs, rhs);
+    }
+public:
+    int searchInsert(vector<int>& nums, int target) {
+        int res = 0;
+        if(nums.empty())
+            return res;
+        res = findOrInsert(nums, target, 0, nums.size()-1);
+        return res;
+    }
+};    
+int findContentChildren(vector<int>& g, vector<int>& s) {
+        if( g.empty() || s.empty())
+            return 0;
+        sort(g.begin(), g.end());
+        sort(s.begin(), s.end());
+        int res = 0;
+        int index = 0;
+        for(int i = 0; i < g.size() && index < s.size(); i++) {
+            while(index < s.size() && s[index] < g[i]) {
+                index++;
+                if(index == s.size())
+                    break;
+            }
+            res++;
+            index++;           
+        }
+        return res;
+    }
+
 int main() {
     Solution tmp = Solution();
     vector<vector<char>> grid = {{'5','3','.','.','7','.','.','.','.'},{'6','.','.','1','9','5','.','.','.'},{'.','9','8','.','.','.','.','6','.'},{'8','.','.','.','6','.','.','.','3'},{'4','.','.','8','.','3','.','.','1'},{'7','.','.','.','2','.','.','.','6'},{'.','6','.','.','.','.','2','8','.'},{'.','.','.','4','1','9','.','.','5'},{'.','.','.','.','8','.','.','7','9'}};
+    vector<int> arr = {1, 2, 3};
+    vector<int> arr1 = {1, 1};
     cout<<int('0')<<endl;
-    tmp.solveSudoku(grid);
+    //tmp.searchInsert(arr, 5);
+    findContentChildren(arr, arr1);
     return 0;
 }
