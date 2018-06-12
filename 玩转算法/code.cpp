@@ -1120,6 +1120,8 @@ public:
 //case2：去掉第一家
 //特殊考虑：数组长度为1的情况
 #include <iostream>
+#include "assert.h"
+#include <vector>
 using namespace std;
 class Solution {
 private:
@@ -1391,7 +1393,7 @@ public:
 
 
 /*******************************************************************************
-例题：377
+例题：377.Combanition Sum IV
 
 *******************************************************************************/
 class Solution {
@@ -2356,12 +2358,27 @@ int findContentChildren(vector<int>& g, vector<int>& s) {
 }
 
 /*******************************************************************************
-例题：
+例题：392.Is Subsequence
 
 *******************************************************************************/
-
-
-
+class Solution {
+public:
+    //贪婪算法，选择最早出现字符作为子串的字符  
+    bool isSubsequence(string s, string t) {
+        if(s.empty()) 
+            return true;
+        int i = 0;
+        int j = 0;
+        while(i < s.size() && j < t.size()) {
+            if(t[j] == s[i]) 
+                i++;
+            j++;
+        }
+        if(i==s.size())
+            return true;
+        return false;
+    }
+};
 /*******************************************************************************
 例题：
 
