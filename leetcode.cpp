@@ -229,3 +229,133 @@ public:
         return ans;
     }    
 };
+//49. Group Anagrams
+vector<vector<string>> groupAnagrams(vector<string>& strs) {
+    if (strs.empty())
+        return vector<vector<string> >();
+    int len = strs.size();
+    //将字符串数组按照字典顺序排序
+    sort(strs.begin(), strs.end());
+    //存储结果
+    vector<vector<string> > ret;
+    //利用哈希思想构建map，将排序后相等的字符串存在相应的vector
+    map<string, vector<string>> mv;
+    for (int i = 0; i < len; i++)
+    {
+        string str = strs[i];
+        sort(str.begin(), str.end());
+
+        mv[str].push_back(strs[i]);
+    }
+    for (map<string, vector<string> >::iterator iter = mv.begin(); iter != mv.end(); iter++)
+        ret.push_back(iter->second);
+    return ret;
+}
+//   500 keyboard row
+//方法一：
+class Solution {
+private:
+    const unordered_set keyOne = {'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'};
+    const unordered_set keyTwo = {'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'};
+    const unordered_set keyThree = {'Z', 'X', 'C', 'V', 'B', 'N', 'M'};
+public:
+    vector<string> findWords(vector<string>& words) {
+        vector<string> res;
+        for(auto& word : words) {
+            bool f1 = true, f2 = true, f3 = true;
+            for(auto& c : word) {
+                if(f1) {
+                   auto it = keyOne.find(toupper(c));
+                    if(it == keyOne.end()) f1 = false;
+                }
+                if(f2) {
+                    auto it = keyTwo.find(toupper(c));
+                    if(it == keyTwo.end()) f2 = false;
+                }
+                if(f3) {
+                    auto it = keyThree.find(toupper(c));
+                    if(it == keyThree.end()) f3 = false;
+                }                
+            }  
+            if(f1 || f2 || f3) {
+                res.push_back(word);
+            }             
+        }
+        return res;
+    }
+};
+//方法一：二进制&的关系
+class Solution {
+public:
+    vector<string> findWords(vector<string>& words) {
+        vector<int> dict(26);
+        vector<string> rows = {"QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"};
+        for (int i = 0; i < rows.size(); i++) {
+            for (auto c : rows[i]) dict[c-'A'] = 1 << i;
+        }
+        vector<string> res;
+        for (auto w : words) {
+            int r = 7;
+            for (char c : w) {
+                r &= dict[toupper(c)-'A'];
+                if (r == 0) break;
+            }
+            if (r) res.push_back(w);
+        }
+        return res;
+    }
+};
+//769.  
+class Solution {
+public:
+    int maxChunksToSorted(vector<int>& arr) {
+        if(arr.empty())
+            return 0;
+        int res = 0;
+        int max_i = 0;
+        for(int i = 0; i < arr.size(); i ++) {
+            max_i = max(max_i, arr[i]);
+            if( i == max_i) res ++;
+        }
+        return res;
+    }
+};
+// 417. Pacific Atlantic Water Flow
+class Solution {
+private:
+    vector<vector<bool>> used;
+    int flag = 0;
+    int square = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+    int flowWater(int row, int col, vector<vector<int>>& matrix, int& res) {
+        if(row + col <= )    
+        for(int i = 0; i < 4; i ++) {
+            //move to four square
+            int newRow = row + square[i][0];
+            int newCol = col + square[i][1];
+            if(!used[newRow][newCol]) {
+                flowWater(newRow, newCol, matrix);
+            }
+        }            
+    }
+public:
+    vector<pair<int, int>> pacificAtlantic(vector<vector<int>>& matrix) {
+        vector<pair<int, int>> ans;
+        if(matrix.empty())
+            return ans;
+        int m = matrix.size();
+        int n = matrix[0].size();
+        flag = 
+        used = vector< vector<int>>(m+1, vector<int>(n+1, false));
+        for(int i = 0; i <= m; i ++) 
+            for(int j = 0; j <= n; j++)
+                if(0 ==i || 0 == j)
+                    used[i][j] == true;
+        for(i = 1; i < m+1; i ++) {
+            for(j = 1; j < n+1; j ++) {
+                if(!used[i][j])
+                    flowWater(i, j, matrix);
+            }
+        }
+
+    
+};
