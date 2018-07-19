@@ -2380,10 +2380,36 @@ public:
     }
 };
 /*******************************************************************************
-例题：
+例题：829. Consecutive Numbers Sum
 
 *******************************************************************************/
+class Solution {
+private:
+    // void doConsecutive(int N, int result) {
 
+    // }
+public:
+    int consecutiveNumbersSum(int N) {
+        assert(N>=0);
+        int result = 0;
+        //doConsecutive(N, result);
+        int index1 = 1, index2 = 1;
+        int sum = 0;
+        while(index1<=index && index2 <= N) {
+            if(sum == N)
+                result ++;
+            else if(sum > N) {
+                sum -= index1;
+                index1 ++;
+            }
+            else {
+                sum += index2;
+                index2 ++;
+            }
+        }
+        return result;
+    }
+};
 
 
 /*******************************************************************************

@@ -19,5 +19,16 @@
     1. 首位字符为0, 则只能取一位
     2. 首位不为零, 长度>=2, 可以取2位
     3. 首位不为0, 长度>=3, 并且取三位得到的整数<256, 则可取三位
+8. 49. Group Anagrams
+    1. 对整个进行排序，在对每一个分别排序，插入哈希表中
 ## array
-
+1. 769.max chunks to make sorted 
+    - arr will have length in range [1, 10].
+    - arr[i] will be a permutation of [0, 1, ..., arr.length - 1].
+## 递归回溯
+1. 526. Beautiful Arrangement
+    1. 
+## 深度优先
+1. Leetcode 417. Pacific Atlantic Water Flow
+    1. 分别处理每个海洋，从海洋边缘（每个海洋两条边）开始，一步步的搜索，即从连接海洋的地方还是搜索，哪些节点的高度高于等于自身（反过来就是可以从那里流到自己），如果是，就标记为true，就这样不断搜索下去。最后所有标记为true的位置就是可以流到对应的海洋。 
+    2. 找这两个矩阵，同为true的输出，就是都能流到两个海洋的位
