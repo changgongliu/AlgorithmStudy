@@ -359,3 +359,70 @@ public:
 
     
 };
+//844 backspace string compare
+class Solution {
+    public boolean backspaceCompare(String S, String T) {
+        int pre1 = 0, pre2 = 0;
+        int index1 = 0, index2 = 0;
+        int len1 = S.size(), len2 = T.size();
+        while(index1 < len1 && index2 < len2) {
+            int count1 = 0, count2 = 0;
+            pre1 = index1;
+            while(S[index1+1] == '#') {
+                count1 ++;
+                index1 ++;
+            }
+            while(T[index2+1] == '#') {
+                count2 ++;
+                index2 ++;
+            }
+            pre1 = pre1 - count1;
+            pre2 = pre2 - count2;
+            if(pre1 < 0 ) 
+                pre1 = 0;
+            if(pre2 < 0) 
+                pre2 = 0;
+            if(S[pre1] == T[pre2]) {
+                pre1 = index1;
+                pre2 = index2;
+            }
+            index1 ++;
+            index2 ++;
+        }        
+    }
+}
+// 14. Longest Common Prefix
+class Solution {
+public:
+    string longestCommonPrefix(vector<string>& strs) {//每一次对结果进行处理，注意学习substr的使用
+        if(strs.empty()) 
+            return "";
+        string result = strs[0];
+        int index = result.size() + 1;
+        for(auto words : strs) {
+            if(0 == index)
+                break;
+            int i = 0;
+            for(auto word : words) {
+                if(i < result.size() && word == result[i]) {
+                    i ++;
+                }
+                else 
+                    break;
+            }
+            index = i;
+            result = result.substr(0, i);
+        }
+        cout<<index<<endl;
+        return result;
+        
+    }
+};
+//22. Generate Parentheses
+//回溯法
+class Solution {
+public:
+    vector<string> generateParenthesis(int n) {
+         
+    }
+};
